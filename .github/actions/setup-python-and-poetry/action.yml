@@ -93,7 +93,7 @@ runs:
         else
           path="$HOME/.local/"
         fi
-        echo path=$path >> GITHUB_OUTPUT
+        echo home-path=$path >> GITHUB_OUTPUT
         echo $path
       shell: bash
 
@@ -101,14 +101,14 @@ runs:
       id: full-system-py-version
       run: |
         python -V
-        echo ${{ steps.poetry-home.outputs.path }}
+        echo ${{ steps.poetry-home.outputs.home-path }}
         echo version=$(python -V) >> GITHUB_OUTPUT
       shell: bash
 
     - name: Cache ${{ steps.poetry-home.outputs.path }}
       uses: actions/cache@v3
       with:
-        path: ${{ steps.poetry-home.outputs.path }}
+        path: ${{ steps.poetry-home.outputs.home-path }}
         key: "\
           poetry-\
           ${{ runner.os }}-\
