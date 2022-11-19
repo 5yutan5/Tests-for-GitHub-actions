@@ -89,7 +89,7 @@ runs:
       id: poetry-home
       run: |
         path=$(which poetry)
-        echo "Poetry home: "${path%/*}
+        echo "Poetry home: ${path%/*}"
         echo ${path%/*} >> $GITHUB_PATH
       shell: bash
 
