@@ -85,6 +85,31 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - name: Get Poetry home path
+      id: poetry-home
+      run: |
+        path=$(which poetry)
+        echo "Poetry home: "${path%/*}
+        echo ${path%/*} >> $GITHUB_PATH
+      shell: bash
+
+    - name: Get full version of system default Python
+      id: full-system-py-version
+      run: |
+        echo version=$(python -c \
+          "import sys; print('-'.join(str(v) for v in sys.version_info))"
+          ) >> GITHUB_OUTPUT
+      shell: bash
+
+    - name: Cache ${{ steps.poetry-home.outputs.path }}
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.poetry-home.outputs.path }}
+        key: "\
+          poetry-\
+          ${{ runner.os }}-\
+          ${{ steps.full-system-py-version.outputs.version }}"
+
     - uses: snok/install-poetry@v1.3.2
       id: setup-poetry
       with:
