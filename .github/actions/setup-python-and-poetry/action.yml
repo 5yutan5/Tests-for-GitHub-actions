@@ -136,7 +136,7 @@ runs:
       if: >-
         ${{ inputs.poetry-install-dependencies }} &&
         ${{ steps.setup-python.outputs.cache-hit }} != 'true'
-      run: poetry install ${{ poetry-install-dependencies-arguments }}
+      run: poetry install ${{ inputs.poetry-install-dependencies-arguments }}
       env:
         # Poetry log will be corrupted on Windows.
         # Changing the encoding to utf-8 fixes this problem.
