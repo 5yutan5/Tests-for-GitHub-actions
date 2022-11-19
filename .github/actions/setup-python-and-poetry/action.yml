@@ -93,16 +93,16 @@ runs:
         else
           path="$HOME/.local/"
         fi
-        echo path="$path" >> GITHUB_OUTPUT
+        echo path=$path >> GITHUB_OUTPUT
         echo $path
       shell: bash
 
     - name: Get full version of system default Python
       id: full-system-py-version
       run: |
-        echo version=$(python -c \
-          "import sys; print('-'.join(str(v) for v in sys.version_info))"\
-          ) >> GITHUB_OUTPUT
+        python -V
+        echo ${{ steps.poetry-home.outputs.path }}
+        echo version=$(python -V) >> GITHUB_OUTPUT
       shell: bash
 
     - name: Cache ${{ steps.poetry-home.outputs.path }}
