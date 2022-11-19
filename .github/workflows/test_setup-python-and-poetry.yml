@@ -16,4 +16,4 @@ jobs:
       - uses: ./.github/actions/setup-python-and-poetry
         with:
           python-version: '3.x'
-      - run: poetry run python demo_app/test.py
+      - run: poetry run python demo_python/test.py
