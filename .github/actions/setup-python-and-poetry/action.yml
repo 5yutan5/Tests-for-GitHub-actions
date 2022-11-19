@@ -88,9 +88,12 @@ runs:
     - name: Get Poetry home path
       id: poetry-home
       run: |
-        path=$(which poetry)
-        echo "Poetry home: ${path%/*}"
-        echo ${path%/*} >> $GITHUB_PATH
+        if [ ${{ runner.os }} == "Windows" ]; then
+          path="C:/Users/runneradmin/AppData/Roaming/Python/Scripts"
+        else
+          path="$HOME/.local/"
+        fi
+        echo ::set-output name=path::$path
       shell: bash
 
     - name: Get full version of system default Python
