@@ -93,7 +93,6 @@ runs:
         virtualenvs-path: ${{ inputs.poetry-virtualenvs-path }}
         installer-parallel: ${{ inputs.poetry-installer-parallel }}
         installation-arguments: ${{ inputs.poetry-installation-arguments }}
-      shell: bash
 
     - name: Create additional dependency file
       if: ${{ inputs.poetry-install-dependencies-arguments }}
@@ -132,7 +131,6 @@ runs:
         token: ${{ inputs.token }}
         cache-dependency-path: ${{ steps.cache-dependency-path.outputs.path }}
         update-environment: ${{ inputs.python-update-environment }}
-      shell: bash
 
     - name: Install Python dependencies
       if: >-
