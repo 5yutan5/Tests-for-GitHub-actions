@@ -1,0 +1,19 @@
+---
+name: test setup-python-and-poetry
+
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+jobs:
+  setup-python-poetry:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup-python-and-poetry
+        with:
+          python-version: '3.x'
+      - run: poetry run python -m test.py

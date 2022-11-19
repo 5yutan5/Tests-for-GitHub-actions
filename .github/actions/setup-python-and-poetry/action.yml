@@ -1,0 +1,146 @@
+---
+name: 'Setup Python and Poetry'
+description: >-
+  Set up a specific version of Python and Poetry
+  and add the command-line tools to the PATH.
+  This is wrapper that run `actions/setup-python`
+  and `snok/install-poetry`.
+author: 'Yunosuke Ohsugi'
+branding:
+  icon: 'code'
+  color: 'green'
+
+inputs:
+  python-version:
+    description: 'Wrapper around `version` input of actions/setup-python.'
+  python-version-file:
+    description: 'Wrapper around `version-file` input of actions/setup-python.'
+    required: false
+  python-architecture:
+    description: 'Wrapper around `architecture` input of actions/setup-python.'
+    required: false
+  python-check-latest:
+    description: 'Wrapper around `check-latest` input of actions/setup-python.'
+    default: 'false'
+  token:
+    description: 'Wrapper around `token` input of actions/setup-python.'
+    default: |
+      ${{ github.server_url == 'https://github.com' && github.token || '' }}
+  python-cache-dependency-path:
+    description: |
+      'Wrapper around `cache-dependency-path` input of actions/setup-python.'
+    required: false
+  python-update-environment:
+    description: |
+      'Wrapper around `update-environment` input of actions/setup-python.'
+    default: 'true'
+
+  poetry-version:
+    description: 'Wrapper around `version` input of snok/install-poetry.'
+    default: 'latest'
+  poetry-virtualenvs-create:
+    description: |
+      'Wrapper around `virtualenvs-create` input of snok/install-poetry.'
+    default: 'true'
+  poetry-virtualenvs-in-project:
+    description: |
+      'Wrapper around `virtualenvs-in-project` input of snok/install-poetry.'
+    default: 'true'
+  poetry-virtualenvs-path:
+    description: |
+      'Wrapper around `virtualenvs-path` input of snok/install-poetry.'
+    default: '{cache-dir}/virtualenvs'
+  poetry-installer-parallel:
+    description: |
+      'Wrapper around `installer-parallel` input of snok/install-poetry.'
+    default: 'true'
+  poetry-installation-arguments:
+    description: |
+      'Wrapper around `installation-arguments` input of snok/install-poetry.'
+    required: false
+
+  python-cache-dependencies:
+    description: ''
+    default: 'true'
+  poetry-install-dependencies:
+    description: ''
+    default: 'true'
+  poetry-install-dependencies-arguments:
+    description: ''
+    required: true
+
+outputs:
+  python-version:
+    description: |
+      'Wrapper around `python-version` output of actions/setup-python.'
+    value: ${{ steps.setup-python.outputs.python-version }}
+  python-cache-hit:
+    description: 'Wrapper around `cache-hit` output of actions/setup-python.'
+    value: ${{ steps.setup-python.outputs.cache-hit }}
+  python-path:
+    description: 'Wrapper around `python-path` output of actions/setup-python.'
+    value: ${{ steps.setup-python.outputs.python-path }}
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: snok/install-poetry@v1
+      id: setup-poetry
+      with:
+        version: ${{ inputs.poetry-version }}
+        virtualenvs-create: ${{ inputs.poetry-virtualenvs-create }}
+        virtualenvs-in-project: ${{ inputs.poetry-virtualenvs-in-project }}
+        virtualenvs-path: ${{ inputs.poetry-virtualenvs-path }}
+        installer-parallel: ${{ inputs.poetry-installer-parallel }}
+        installation-arguments: ${{ inputs.poetry-installation-arguments }}
+      shell: bash
+
+    - name: Create additional dependency file
+      if: ${{ inputs.poetry-install-dependencies-arguments }}
+      run: |
+        echo ${{ github.action_path }}/temp-key.txt
+        echo ${{ inputs.poetry-install-dependencies-arguments }} > \
+        ${{ github.action_path }}/temp-key.txt
+      shell: bash
+
+    - name: Update python-cache-dependency-path
+      id: cache-dependency-path
+      run: |
+        if [ -z "${{ inputs.poetry-install-dependencies-arguments }}"]; then
+          echo path=${{ inputs.python-cache-dependency-path }} >> $GITHUB_OUTPUT
+        else
+          dependency_paths = ${{ inputs.python-cache-dependency-path }}
+          dependency_paths += "\n"${{ github.action_path }}/temp-key.txt
+          echo path=$dependency_paths >> $GITHUB_OUTPUT
+        fi
+      shell: bash
+
+    - name: Check whether to cache
+      id: cache
+      if: ${{ inputs.python-cache-dependencies }} == 'true'
+      run: echo id="poetry" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        cache: ${{ steps.cache.outputs.id }}
+        python-version: ${{ inputs.python-version }}
+        python-version-file: ${{ inputs.python-version-file}}
+        architecture: ${{ inputs.python-architecture }}
+        check-latest: ${{ inputs.python-check-latest }}
+        token: ${{ inputs.token }}
+        cache-dependency-path: ${{ steps.cache-dependency-path.outputs.path }}
+        update-environment: ${{ inputs.python-update-environment }}
+      shell: bash
+
+    - name: Install Python dependencies
+      if: >-
+        ${{ inputs.poetry-install-dependencies }} &&
+        ${{ steps.setup-python.outputs.cache-hit }} != 'true'
+      run: poetry install ${{ poetry-install-dependencies-arguments }}
+      env:
+        # Poetry log will be corrupted on Windows.
+        # Changing the encoding to utf-8 fixes this problem.
+        PYTHONIOENCODING: 'utf-8'
+      shell: bash
