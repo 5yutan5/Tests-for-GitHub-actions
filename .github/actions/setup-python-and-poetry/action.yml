@@ -60,13 +60,14 @@ inputs:
     required: false
 
   python-cache-dependencies:
-    description: ''
+    description: 'Whether to cache installed dependencies.'
     default: 'true'
   poetry-install-dependencies:
-    description: ''
+    description: |
+      'Whether Poetry should install dependencies after completing all setup.'
     default: 'true'
   poetry-install-dependencies-arguments:
-    description: ''
+    description: 'Arguments passed directly to the Poetry `install` command.'
     required: true
 
 outputs:
