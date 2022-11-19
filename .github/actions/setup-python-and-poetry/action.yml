@@ -125,7 +125,6 @@ runs:
     # that installed with `snok/install-poetry``.
     - name: Add poetry path to GITHUB_PATH
       run: |
-        where poetry
         which poetry
         echo $(where poetry) >> $GITHUB_PATH
       shell: bash
