@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: .github/actions/setup-python-and-poetry
+      - uses: ./.github/actions/setup-python-and-poetry
         with:
           python-version: '3.x'
       - run: poetry run python -m test.py
