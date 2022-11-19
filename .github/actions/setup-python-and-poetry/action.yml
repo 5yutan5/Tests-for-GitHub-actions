@@ -85,7 +85,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - uses: snok/install-poetry@v1.3.2
+    - uses: snok/install-poetry@v1
       id: setup-poetry
       with:
         version: ${{ inputs.poetry-version }}
