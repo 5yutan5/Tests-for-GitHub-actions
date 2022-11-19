@@ -121,6 +121,12 @@ runs:
       run: echo id="poetry" >> $GITHUB_OUTPUT
       shell: bash
 
+    # On Windows, actions/setup-python cannot find poetry
+    # that installed with `snok/install-poetry``.
+    - name: Add poetry path to GITHUB_PATH
+      run: echo $(which poetry) >> $GITHUB_PATH
+      shell: bash
+
     - uses: actions/setup-python@v4
       id: setup-python
       with:
