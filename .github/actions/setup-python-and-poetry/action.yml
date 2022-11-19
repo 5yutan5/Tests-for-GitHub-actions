@@ -106,7 +106,7 @@ runs:
       shell: bash
 
     - name: Cache ${{ steps.poetry-home.outputs.path }}
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.poetry-home.outputs.path }}
         key: "\
