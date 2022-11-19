@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "demo"
+version = "1.0.0"
+description = "This is demo."
+authors = ["Yunosuke Ohsugi <63651161+5yutan5@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "demo_python" }]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = ">=3.7,<4.0"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+isort = "^5.10.1"
+pre-commit = "^2.20.0"
+flake8 = "^5.0.4"
+pyproject-flake8 = "^5.0.4.post1"
+
+[tool.flake8]
+max-complexity = 7
+
+[tool.black]
+line-length = 104
+
+[tool.isort]
+profile = "black"
+line_length = 104
+
+[tool.pyright]
+typeCheckingMode = "basic"
