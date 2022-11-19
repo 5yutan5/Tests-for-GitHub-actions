@@ -93,7 +93,7 @@ runs:
         else
           path="$HOME/.local/"
         fi
-        echo path=$path >> GITHUB_OUTPUT
+        echo path="$path" >> GITHUB_OUTPUT
         echo $path
       shell: bash
 
