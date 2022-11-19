@@ -93,7 +93,7 @@ runs:
         else
           path="$HOME/.local/"
         fi
-        echo ::set-output name=path::$path
+        echo path=$path >> GITHUB_OUTPUT
       shell: bash
 
     - name: Get full version of system default Python
