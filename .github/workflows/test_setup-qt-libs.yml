@@ -1,0 +1,56 @@
+---
+name: measure speed of setup-qt-libs
+
+on:  # yamllint disable-line rule:truthy
+  workflow_dispatch:
+
+jobs:
+  use-apt-get-with-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: tlambert03/setup-qt-libs@v1
+
+  use-apt-fast-with-js:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: 5yutan5/setup-qt-libs@test
+
+  use-apt-get-with-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install --no-install-recommends -y \
+            libxkbcommon-x11-0 \
+            x11-utils \
+            libyaml-dev \
+            libegl1-mesa \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-xinerama0 \
+            libopengl0
+
+  use-apt-fast-with-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          sudo apt-fast update -y
+          sudo apt-fast install --no-install-recommends -y \
+            libxkbcommon-x11-0 \
+            x11-utils \
+            libyaml-dev \
+            libegl1-mesa \
+            libxcb-icccm4 \
+            libxcb-image0 \
+            libxcb-keysyms1 \
+            libxcb-randr0 \
+            libxcb-render-util0 \
+            libxcb-xinerama0 \
+            libopengl0
