@@ -84,24 +84,24 @@ runs:
       id: pipx-dirs
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          echo "bin=$(pipx environment --value PIPX_BIN_DIR)\poetry.exe" \
-            >> $GITHUB_OUTPUT
-          echo "poetry=$(pipx environment --value PIPX_LOCAL_VENVS)\poetry" \
-          >> $GITHUB_OUTPUT
+          BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)\poetry.exe"
+          VENV_PATH="$(pipx environment --value PIPX_LOCAL_VENVS)\poetry"
+          echo cache="$HOME\AppData\Local\pypoetry\Cache" >> $GITHUB_OUTPUT
         else
-          echo bin=$(pipx environment --value PIPX_BIN_DIR)/poetry \
-            >> $GITHUB_OUTPUT
-          echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)/poetry \
-          >> $GITHUB_OUTPUT
+          BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
+          VENV_PATH="$(pipx environment --value PIPX_LOCAL_VENVS)/poetry"
         fi
+        echo bin=$BIN_PATH >> $GITHUB_OUTPUT
+        echo venv=$VENV_PATH >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Restore and cache Poetry installation
       uses: actions/cache@v3
       with:
         path: |
-          ${{ steps.pipx-dirs.outputs.poetry }}
+          ${{ steps.pipx-dirs.outputs.venv }}
           ${{ steps.pipx-dirs.outputs.bin }}
+          ${{ steps.pipx-dirs.outputs.cache }}
         key: "\
           setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
@@ -114,7 +114,6 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
-        poetry config cache-dir
       shell: bash
 
     - name: Configure Poetry
