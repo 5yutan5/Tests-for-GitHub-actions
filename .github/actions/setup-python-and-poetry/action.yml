@@ -104,15 +104,6 @@ runs:
           ${{ runner.os }}-\
           ${{ steps.full-system-py-version.outputs.version }}"
 
-    # On Windows, actions/setup-python cannot find poetry
-    # that installed with `snok/install-poetry``.
-    - name: Add poetry path to GITHUB_PATH
-      run: |
-        path=$(which poetry)
-        echo $path
-        echo POETRY_HOME=${path%/*} >> $GITHUB_ENV
-      shell: bash
-
     - uses: snok/install-poetry@v1
       id: setup-poetry
       with:
@@ -122,6 +113,14 @@ runs:
         virtualenvs-path: ${{ inputs.poetry-virtualenvs-path }}
         installer-parallel: ${{ inputs.poetry-installer-parallel }}
         installation-arguments: ${{ inputs.poetry-installation-arguments }}
+
+    # On Windows, actions/setup-python cannot find poetry
+    # that installed with `snok/install-poetry``.
+    - name: Add poetry path to GITHUB_PATH
+      run: |
+        path=$(which poetry)
+        echo POETRY_HOME=${path%/*} >> $GITHUB_ENV
+      shell: bash
 
     - name: Create additional dependency file
       if: ${{ inputs.poetry-install-dependencies-arguments }}
