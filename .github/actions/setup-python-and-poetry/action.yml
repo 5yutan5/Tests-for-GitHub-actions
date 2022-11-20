@@ -119,7 +119,7 @@ runs:
     - name: Add poetry path to GITHUB_PATH
       run: |
         path=$(which poetry)
-        echo POETRY_HOME=${path%/*} >> $GITHUB_ENV
+        echo ${path%/*} >> $GITHUB_PATH
       shell: bash
 
     - name: Create additional dependency file
