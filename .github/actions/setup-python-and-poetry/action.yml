@@ -107,8 +107,7 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
-        pipx ensurepath --force
-        pipx completions
+        echo ${{ steps.pipx-dirs.outputs.bin }} >> $GITHUB_PATH
         poetry -V
         poetry config cache-dir
       shell: bash
