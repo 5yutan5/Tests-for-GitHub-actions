@@ -88,7 +88,7 @@ runs:
         if [ "${{ runner.os }}" == "Windows" ]; then
           BIN_PATH=$(pipx environment --value PIPX_BIN_DIR)
           BIN_PATH_FIXED=${BIN_PATH%\\*}
-          echo bin=$BIN_PATH_FIXED/bin/poetry >> $GITHUB_OUTPUT
+          echo bin=$BIN_PATH_FIXED/.local/bin/poetry >> $GITHUB_OUTPUT
         else
           echo bin=$(pipx environment --value PIPX_BIN_DIR)/poetry \
           >> $GITHUB_OUTPUT
