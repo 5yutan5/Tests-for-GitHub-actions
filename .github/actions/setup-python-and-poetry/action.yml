@@ -86,7 +86,7 @@ runs:
         if [ "${{ runner.os }}" == "Windows" ]; then
           BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)\poetry.exe"
           VENV_PATH="$(pipx environment --value PIPX_LOCAL_VENVS)\poetry"
-          echo cache="$HOME\AppData\Local\pypoetry\Cache" >> $GITHUB_OUTPUT
+          echo cache="$HOME/AppData/Local/pypoetry/Cache" >> $GITHUB_OUTPUT
         else
           BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
           VENV_PATH="$(pipx environment --value PIPX_LOCAL_VENVS)/poetry"
@@ -114,6 +114,7 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
+        poetry config cache-dir
       shell: bash
 
     - name: Configure Poetry
