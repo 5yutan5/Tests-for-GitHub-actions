@@ -87,21 +87,12 @@ runs:
   steps:
     - name: Get Poetry home path
       id: poetry-home
-      run: |
-        if [ ${{ runner.os }} == "Windows" ]; then
-          path="C:/Users/runneradmin/AppData/Roaming/Python/Scripts"
-        else
-          path="$HOME/.local/"
-        fi
-        echo path=$path >> $GITHUB_OUTPUT
+      run: echo path="$HOME/.local/" >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Get full version of system default Python
       id: full-system-py-version
-      run: |
-        python -V
-        echo ${{ steps.poetry-home.outputs.path }}
-        echo version=$(python -V) >> $GITHUB_OUTPUT
+      run: echo version=$(python -V) >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Cache ${{ steps.poetry-home.outputs.path }}
@@ -113,7 +104,15 @@ runs:
           ${{ runner.os }}-\
           ${{ steps.full-system-py-version.outputs.version }}"
 
-    - uses: snok/install-poetry@v1.3.2
+    # On Windows, actions/setup-python cannot find poetry
+    # that installed with `snok/install-poetry``.
+    - name: Add poetry path to GITHUB_PATH
+      run: |
+        path=$(which poetry)
+        echo POETRY_HOME=${path%/*} >> $GITHUB_ENV
+      shell: bash
+
+    - uses: snok/install-poetry@v1
       id: setup-poetry
       with:
         version: ${{ inputs.poetry-version }}
