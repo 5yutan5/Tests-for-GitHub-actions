@@ -116,11 +116,20 @@ runs:
 
     # On Windows, actions/setup-python cannot find poetry
     # that installed with `snok/install-poetry``.
-    - name: Add poetry path to GITHUB_PATH
+    - name: Get Poetry executable path
+      if: ${{ runner.os }} == "Windows"
+      id: poetry_path
       run: |
         path=$(which poetry)
-        echo ${path%/*} >> $GITHUB_PATH
+        echo path=${path%/*} >> $GITHUB_OUTPUT
       shell: bash
+
+    - name: Add poetry path to PATH
+      if: ${{ runner.os }} == "Windows"
+      run: |
+        echo ${{ steps.poetry_path.outputs.path }} | \
+          Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      shell: pwsh
 
     - name: Create additional dependency file
       if: ${{ inputs.poetry-install-dependencies-arguments }}
