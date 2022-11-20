@@ -115,6 +115,7 @@ runs:
       shell: bash
 
     - run: |
+        echo PYTHONPATH=$(which python3) >> $GITHUB_ENV
         poetry -V
         poetry config cache-dir
       shell: bash
