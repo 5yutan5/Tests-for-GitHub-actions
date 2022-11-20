@@ -93,6 +93,7 @@ runs:
             >> $GITHUB_OUTPUT
           echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)/poetry \
           >> $GITHUB_OUTPUT
+        fi
       shell: bash
 
     - name: Restore and cache Poetry installation
