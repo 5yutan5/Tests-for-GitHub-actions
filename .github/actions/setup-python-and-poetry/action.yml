@@ -107,11 +107,7 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
-        echo ${{ steps.pipx-dirs.outputs.bin }} >> $GITHUB_PATH
-        echo $(which python3) >> $GITHUB_PATH
-        which python3
-        which python
-        which py
+        echo "${{ steps.pipx-dirs.outputs.bin }}" >> $GITHUB_PATH
         which poetry
         poetry -V
         poetry config cache-dir
