@@ -85,7 +85,7 @@ runs:
       run: |
         echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)/poetry \
           >> $GITHUB_OUTPUT
-        if [ "${{ runner.os }}" == "Windows"]; then
+        if [ "${{ runner.os }}" == "Windows" ]; then
           BIN_PATH=$(pipx environment --value PIPX_BIN_DIR)
           BIN_PATH_FIXED=${BIN_PATH%/*}
           echo bin=$BIN_PATH_FIXED/bin/poetry >> $GITHUB_OUTPUT
