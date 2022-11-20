@@ -86,7 +86,7 @@ runs:
         if [ "${{ runner.os }}" == "Windows" ]; then
           echo "bin=$(pipx environment --value PIPX_BIN_DIR)\poetry" \
             >> $GITHUB_OUTPUT
-          echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)\poetry \
+          echo "poetry=$(pipx environment --value PIPX_LOCAL_VENVS)\poetry" \
           >> $GITHUB_OUTPUT
         else
           echo bin=$(pipx environment --value PIPX_BIN_DIR)/poetry \
