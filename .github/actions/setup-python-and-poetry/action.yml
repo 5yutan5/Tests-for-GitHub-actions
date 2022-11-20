@@ -92,7 +92,7 @@ runs:
 
     - name: Get full version of system default Python
       id: full-system-py-version
-      run: echo version=$(python -V) >> $GITHUB_OUTPUT
+      run: echo version=$(python3 -V) >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Cache ${{ steps.poetry-home.outputs.path }}
@@ -109,6 +109,7 @@ runs:
     - name: Add poetry path to GITHUB_PATH
       run: |
         path=$(which poetry)
+        echo $path
         echo POETRY_HOME=${path%/*} >> $GITHUB_ENV
       shell: bash
 
