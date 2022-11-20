@@ -1,10 +1,8 @@
 ---
-name: 'Setup Python and Poetry'
+name: 'Setup Poetry environment'
 description: >-
-  Set up a specific version of Python and Poetry
-  and add the command-line tools to the PATH.
-  This is wrapper that run `actions/setup-python`
-  and `snok/install-poetry`.
+  This action allows setting up Python and Poetry, installing dependencies,
+  and caching dependencies and Poetry all at once.
 author: 'Yunosuke Ohsugi'
 branding:
   icon: 'code'
@@ -15,10 +13,8 @@ inputs:
     description: 'Wrapper around `version` input of actions/setup-python.'
   python-version-file:
     description: 'Wrapper around `version-file` input of actions/setup-python.'
-    required: false
   python-architecture:
     description: 'Wrapper around `architecture` input of actions/setup-python.'
-    required: false
   python-check-latest:
     description: 'Wrapper around `check-latest` input of actions/setup-python.'
     default: 'false'
@@ -29,35 +25,29 @@ inputs:
   python-cache-dependency-path:
     description: |
       'Wrapper around `cache-dependency-path` input of actions/setup-python.'
-    required: false
+    default: '**/poetry.lock'
   python-update-environment:
     description: |
       'Wrapper around `update-environment` input of actions/setup-python.'
     default: 'true'
 
   poetry-version:
-    description: 'Wrapper around `version` input of snok/install-poetry.'
-    default: 'latest'
+    description: 'The Poetry version to install.'
+  poetry-installer-max-workers:
+    description: 'Wrapper around Poetry setting `installer.max-workers`.'
+  poetry-installer-parallel:
+    description: 'Wrapper around Poetry setting `installer.parallel`.'
+    default: 'true'
+  poetry-pypi-token:
+    description: 'Wrapper around Poetry setting `pypi-token`.'
   poetry-virtualenvs-create:
-    description: |
-      'Wrapper around `virtualenvs-create` input of snok/install-poetry.'
+    description: 'Wrapper around Poetry setting `virtualenvs.create`.'
     default: 'true'
   poetry-virtualenvs-in-project:
-    description: |
-      'Wrapper around `virtualenvs-in-project` input of snok/install-poetry.'
-    default: 'true'
+    description: 'Wrapper around Poetry setting `virtualenvs.in-project`.'
   poetry-virtualenvs-path:
-    description: |
-      'Wrapper around `virtualenvs-path` input of snok/install-poetry.'
+    description: 'Wrapper around Poetry setting `virtualenvs-path`.'
     default: '{cache-dir}/virtualenvs'
-  poetry-installer-parallel:
-    description: |
-      'Wrapper around `installer-parallel` input of snok/install-poetry.'
-    default: 'true'
-  poetry-installation-arguments:
-    description: |
-      'Wrapper around `installation-arguments` input of snok/install-poetry.'
-    required: false
 
   python-cache-dependencies:
     description: 'Whether to cache installed dependencies.'
@@ -66,9 +56,8 @@ inputs:
     description: |
       'Whether Poetry should install dependencies after completing all setup.'
     default: 'true'
-  poetry-install-dependencies-arguments:
-    description: 'Arguments passed directly to the Poetry `install` command.'
-    required: true
+  poetry-install-arguments:
+    description: 'Arguments passed directly to the `poetry install` command.'
 
 outputs:
   python-version:
@@ -85,51 +74,69 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: Get Poetry home path
-      id: poetry-home
-      run: echo path="$HOME/.local/" >> $GITHUB_OUTPUT
+    - name: Get the version of each tool used for poetry
+      id: poetry-tool-versions
+      run: |
+        echo python=$(python3 -V) >> $GITHUB_OUTPUT
+        echo pipx=$(pipx --version) >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Get full version of system default Python
-      id: full-system-py-version
-      run: echo version=$(python3 -V) >> $GITHUB_OUTPUT
+    - name: Get Poetry installation location
+      id: pipx-dirs
+      run: |
+        echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)/poetry \
+          >> $GITHUB_OUTPUT
+        echo poetry=$(pipx environment --value PIPX_BIN_DIR)/poetry \
+          >> $GITHUB_OUTPUT
       shell: bash
 
-    - name: Cache ${{ steps.poetry-home.outputs.path }}
+    - name: Restore and cache Poetry installation
       uses: actions/cache@v3
       with:
-        path: ${{ steps.poetry-home.outputs.path }}
+        path: |
+          ${{ steps.pipx-dirs.outputs.poetry }}
+          ${{ steps.pipx-dirs.outputs.bin }}
         key: "\
-          poetry-\
-          ${{ runner.os }}-\
-          ${{ steps.full-system-py-version.outputs.version }}"
+          poetry-cache-${{ runner.os }}-\
+          ${{ steps.poetry-tool-versions.outputs.python }}-\
+          ${{ steps.poetry-tool-versions.outputs.pipx }}"
 
-    - uses: snok/install-poetry@v1
-      id: setup-poetry
-      with:
-        version: ${{ inputs.poetry-version }}
-        virtualenvs-create: ${{ inputs.poetry-virtualenvs-create }}
-        virtualenvs-in-project: ${{ inputs.poetry-virtualenvs-in-project }}
-        virtualenvs-path: ${{ inputs.poetry-virtualenvs-path }}
-        installer-parallel: ${{ inputs.poetry-installer-parallel }}
-        installation-arguments: ${{ inputs.poetry-installation-arguments }}
-
-    # On Windows, actions/setup-python cannot find poetry
-    # that installed with `snok/install-poetry``.
-    - name: Get Poetry executable path
-      if: ${{ runner.os }} == "Windows"
-      id: poetry_path
+    - name: Install Poetry with pipx
       run: |
-        path=$(which poetry)
-        echo path=${path%/*} >> $GITHUB_OUTPUT
+        if [ -z "${{ inputs.poetry-version }}" ]; then
+          pipx install poetry
+        else
+          pipx install poetry==${{ inputs.poetry-version }}
+        fi
       shell: bash
 
-    - name: Add poetry path to PATH
-      if: ${{ runner.os }} == "Windows"
+    - name: Configure Poetry
       run: |
-        echo ${{ steps.poetry_path.outputs.path }} | `
-          Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      shell: pwsh
+        if [ -n "${{ inputs.poetry-installer-max-workers }}" ]; then
+          poetry config installer.max-workers \
+            ${{ inputs.poetry-installer-max-workers }}
+        fi
+        if [ "${{ inputs.poetry-installer-parallel }}" == "false" ]; then
+          poetry config installer.parallel false
+        fi
+        if [ -n "${{ inputs.poetry-pypi-token }}" ]; then
+          poetry config pypi-token ${{ inputs.poetry-pypi-token }}
+        fi
+        if [ "${{ inputs.poetry-virtualenvs-create }}" == "false" ]; then
+          poetry config virtualenvs.create false
+        fi
+        if [ "${{ inputs.poetry-virtualenvs-in-project }}" == "true" ]; then
+          poetry config virtualenvs.in-project true
+        fi
+        if [ "${{ inputs.poetry-virtualenvs-in-project }}" == "false" ]; then
+          poetry config virtualenvs.in-project false
+        fi
+        if [ \
+          "${{ inputs.poetry-virtualenvs-path }}" != "{cache-dir}/virtualenvs" \
+        ]; then
+          poetry config virtualenvs.path ${{ inputs.poetry-virtualenvs-path }}
+        fi
+      shell: bash
 
     - name: Create additional dependency file
       if: ${{ inputs.poetry-install-dependencies-arguments }}
