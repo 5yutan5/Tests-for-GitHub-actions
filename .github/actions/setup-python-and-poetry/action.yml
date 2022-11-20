@@ -85,7 +85,7 @@ runs:
       run: |
         echo poetry=$(pipx environment --value PIPX_LOCAL_VENVS)/poetry \
           >> $GITHUB_OUTPUT
-        echo poetry=$(pipx environment --value PIPX_BIN_DIR)/poetry \
+        echo bin=$(pipx environment --value PIPX_BIN_DIR)/poetry \
           >> $GITHUB_OUTPUT
       shell: bash
 
