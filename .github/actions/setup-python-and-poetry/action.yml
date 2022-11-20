@@ -47,7 +47,6 @@ inputs:
     description: 'Wrapper around Poetry setting `virtualenvs.in-project`.'
   poetry-virtualenvs-path:
     description: 'Wrapper around Poetry setting `virtualenvs-path`.'
-    default: '{cache-dir}/virtualenvs'
 
   python-cache-dependencies:
     description: 'Whether to cache installed dependencies.'
@@ -97,9 +96,9 @@ runs:
           ${{ steps.pipx-dirs.outputs.poetry }}
           ${{ steps.pipx-dirs.outputs.bin }}
         key: "\
-          poetry-cache-${{ runner.os }}-\
+          setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
-          ${{ steps.poetry-tool-versions.outputs.pipx }}"
+          pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
 
     - name: Install Poetry with pipx
       run: |
@@ -131,9 +130,7 @@ runs:
         if [ "${{ inputs.poetry-virtualenvs-in-project }}" == "false" ]; then
           poetry config virtualenvs.in-project false
         fi
-        if [ \
-          "${{ inputs.poetry-virtualenvs-path }}" != "{cache-dir}/virtualenvs" \
-        ]; then
+        if [ -n "${{ inputs.poetry-virtualenvs-path }}" ]; then
           poetry config virtualenvs.path ${{ inputs.poetry-virtualenvs-path }}
         fi
       shell: bash
