@@ -92,6 +92,7 @@ runs:
         else
           echo bin=$(pipx environment --value PIPX_BIN_DIR)/poetry \
           >> $GITHUB_OUTPUT
+        fi
       shell: bash
 
     - name: Restore and cache Poetry installation
