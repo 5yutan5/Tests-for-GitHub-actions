@@ -114,6 +114,7 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
+        which poetry
       shell: bash
 
     - name: Configure Poetry
