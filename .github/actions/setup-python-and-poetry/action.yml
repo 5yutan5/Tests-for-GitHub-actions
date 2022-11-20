@@ -84,7 +84,7 @@ runs:
       id: pipx-dirs
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          echo "bin=$(pipx environment --value PIPX_BIN_DIR)\poetry" \
+          echo "bin=$(pipx environment --value PIPX_BIN_DIR)\poetry.exe" \
             >> $GITHUB_OUTPUT
           echo "poetry=$(pipx environment --value PIPX_LOCAL_VENVS)\poetry" \
           >> $GITHUB_OUTPUT
@@ -108,16 +108,12 @@ runs:
           pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
 
     - name: Install Poetry with pipx
-      if: ${{ runner.os }} == "Windows"
       run: |
         if [ -z "${{ inputs.poetry-version }}" ]; then
           pipx install poetry
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
-      shell: bash
-
-    - run: which poetry
       shell: bash
 
     - name: Configure Poetry
