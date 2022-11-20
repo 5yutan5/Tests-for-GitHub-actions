@@ -107,6 +107,7 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
+        pipx ensurepath
       shell: bash
 
     - name: Configure Poetry
