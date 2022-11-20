@@ -118,6 +118,11 @@ runs:
         poetry config cache-dir
       shell: bash
 
+    - run: |
+        poetry -V
+        poetry config cache-dir
+      shell: bash
+
     - name: Configure Poetry
       run: |
         if [ -n "${{ inputs.poetry-installer-max-workers }}" ]; then
