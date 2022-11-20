@@ -114,8 +114,6 @@ runs:
         else
           pipx install poetry==${{ inputs.poetry-version }}
         fi
-        poetry -V
-        poetry config cache-dir
       shell: bash
 
     - run: |
