@@ -91,23 +91,22 @@ runs:
         echo bin=$BIN_PATH >> $GITHUB_OUTPUT
         echo venv=$(pipx environment --value PIPX_HOME)/venvs/poetry \
           >> $GITHUB_OUTPUT
-        echo shared=$(pipx environment --value PIPX_HOME)/shared \
-          >> $GITHUB_OUTPUT
       shell: bash
 
     - name: Restore and cache Poetry installation
       uses: actions/cache@v3
+      id: poetry-cache
       with:
         path: |
           ${{ steps.pipx-dirs.outputs.venv }}
           ${{ steps.pipx-dirs.outputs.bin }}
-          ${{ steps.pipx-dirs.outputs.shared }}
         key: "\
           setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
           pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
 
     - name: Install Poetry with pipx
+      if: ${{ steps.poetry-cache.outputs.cache-hit }} != 'true'
       run: |
         if [ -z "${{ inputs.poetry-version }}" ]; then
           pipx install poetry
