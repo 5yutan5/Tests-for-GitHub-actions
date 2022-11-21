@@ -126,7 +126,7 @@ runs:
         poetry config cache-dir
       shell: bash
       env:
-        MSYS: winsymlinks:native
+        MSYS: 'winsymlinks:native'
 
     - name: Configure Poetry
       run: |
