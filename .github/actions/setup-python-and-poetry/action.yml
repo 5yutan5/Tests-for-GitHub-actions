@@ -115,10 +115,18 @@ runs:
         fi
       shell: bash
 
-    - name: Use GNU Tar from Msys
-      if: ${{ runner.os }} == 'Windows'
+      # - name: Use GNU Tar from Msys
+      #   if: ${{ runner.os }} == 'Windows'
+      #   run: |
+      #     echo "C://msys64//usr//bin" >> $GITHUB_PATH
+      #   shell: bash
+      # HACK https://github.com/actions/cache/issues/315
+    - name: Enable msys binaries
+      if: ${{ runner.os == 'Windows' }}
       run: |
-        echo "C://msys64//usr//bin" >> $GITHUB_PATH
+        echo "C:\msys64\usr\bin" | Out-File`
+          -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        rm "C:\msys64\usr\bin\bash.exe"
       shell: bash
 
     - run: |
