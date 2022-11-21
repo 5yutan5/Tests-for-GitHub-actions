@@ -99,11 +99,20 @@ runs:
       with:
         path: |
           ${{ steps.pipx-dirs.outputs.venv }}
-          ${{ steps.pipx-dirs.outputs.bin }}
+          ${{ steps.pipx-dirs.outputs.bin }}.7z
         key: "\
           setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
           pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
+
+    - name: Extract Poetry bin
+      if: >-
+        ${{ steps.poetry-cache.outputs.cache-hit }} == 'true' &&
+        ${{ runner.os }} == 'Windows'
+      run: |
+        7z x ${{ steps.pipx-dirs.outputs.bin }}.7z
+        ls "$(pipx environment --value PIPX_BIN_DIR)"
+      shell: bash
 
     - name: Install Poetry with pipx
       if: ${{ steps.poetry-cache.outputs.cache-hit }} != 'true'
@@ -115,25 +124,10 @@ runs:
         fi
       shell: bash
 
-      # - name: Use GNU Tar from Msys
-      #   if: ${{ runner.os }} == 'Windows'
-      #   run: |
-      #     echo "C://msys64//usr//bin" >> $GITHUB_PATH
-      #   shell: bash
-      # HACK https://github.com/actions/cache/issues/315
-    - name: Enable msys binaries
-      if: ${{ runner.os == 'Windows' }}
-      run: |
-        echo "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        rm C:\msys64\usr\bin\bash.exe
-      shell: pwsh
-
     - run: |
         poetry -V
         poetry config cache-dir
       shell: bash
-      env:
-        MSYS: 'winsymlinks:native'
 
     - name: Configure Poetry
       run: |
@@ -208,4 +202,11 @@ runs:
         # Poetry log will be corrupted on Windows.
         # Changing the encoding to utf-8 fixes this problem.
         PYTHONIOENCODING: 'utf-8'
+      shell: bash
+
+    - name: Compress poetry bin
+      if: ${{ runner.os }} == 'Windows'
+      run: |
+        7z a ${{ steps.pipx-dirs.outputs.bin }}.7z \
+          ${{ steps.pipx-dirs.outputs.bin }}
       shell: bash
