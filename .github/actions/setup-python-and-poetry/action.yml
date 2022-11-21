@@ -84,12 +84,12 @@ runs:
       id: pipx-dirs
       run: |
         if [ "${{ runner.os }}" == "Windows" ]; then
-          BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)\poetry.exe"
+          POETRY_BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)\poetry.exe"
         else
-          BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
+          POETRY_BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
         fi
-        echo bin=$BIN_PATH >> $GITHUB_OUTPUT
-        echo venv=$(pipx environment --value PIPX_HOME)/venvs/poetry \
+        echo poetry_bin=$POETRY_BIN_PATH >> $GITHUB_OUTPUT
+        echo poetry_venv=$(pipx environment --value PIPX_HOME)/venvs/poetry \
           >> $GITHUB_OUTPUT
       shell: bash
 
@@ -98,23 +98,12 @@ runs:
       id: poetry-cache
       with:
         path: |
-          ${{ steps.pipx-dirs.outputs.venv }}.7z
-          ${{ steps.pipx-dirs.outputs.bin }}
+          ${{ steps.pipx-dirs.outputs.poetry_venv }}
+          ${{ steps.pipx-dirs.outputs.poetry_bin }}
         key: "\
           setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
           pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
-
-    - name: Extract Poetry bin
-      if: >-
-        runner.os == 'Windows' &&
-        steps.poetry-cache.outputs.cache-hit == 'true'
-      run: |
-        7z x -o"${{ steps.pipx-dirs.outputs.venv }}" \
-          "${{ steps.pipx-dirs.outputs.venv }}.7z"
-        rm -f "${{ steps.pipx-dirs.outputs.venv }}.7z"
-        ls "$(pipx environment --value PIPX_HOME)/venvs/poetry"
-      shell: bash
 
     - name: Install Poetry with pipx
       if: steps.poetry-cache.outputs.cache-hit != 'true'
@@ -127,6 +116,7 @@ runs:
       shell: bash
 
     - run: |
+        run "${{ steps.pipx-dirs.outputs.poetry_venv }}/Scripts/poetry"
         poetry -V
         poetry config cache-dir
       shell: bash
@@ -204,11 +194,4 @@ runs:
         # Poetry log will be corrupted on Windows.
         # Changing the encoding to utf-8 fixes this problem.
         PYTHONIOENCODING: 'utf-8'
-      shell: bash
-
-    - name: Compress poetry bin
-      if: ${{ runner.os }} == 'Windows'
-      run: |
-        7z a "${{ steps.pipx-dirs.outputs.venv }}.7z" \
-          "${{ steps.pipx-dirs.outputs.venv }}"
       shell: bash
