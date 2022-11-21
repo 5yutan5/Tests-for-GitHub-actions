@@ -107,15 +107,15 @@ runs:
 
     - name: Extract Poetry bin
       if: >-
-        ${{ steps.poetry-cache.outputs.cache-hit }} == 'true' &&
-        ${{ runner.os }} == 'Windows'
+        runner.os == 'Windows' &&
+        steps.poetry-cache.outputs.cache-hit == 'true'
       run: |
         7z x "${{ steps.pipx-dirs.outputs.bin }}.7z"
         ls "$(pipx environment --value PIPX_BIN_DIR)"
       shell: bash
 
     - name: Install Poetry with pipx
-      if: ${{ steps.poetry-cache.outputs.cache-hit }} != 'true'
+      if: steps.poetry-cache.outputs.cache-hit != 'true'
       run: |
         if [ -z "${{ inputs.poetry-version }}" ]; then
           pipx install poetry
