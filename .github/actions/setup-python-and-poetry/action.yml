@@ -89,7 +89,7 @@ runs:
           BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
         fi
         echo bin=$BIN_PATH >> $GITHUB_OUTPUT
-        echo venv=$(pipx environment --value PIPX_HOME)/venvs/poetry \
+        echo venv=$(pipx environment --value PIPX_HOME) \
           >> $GITHUB_OUTPUT
       shell: bash
 
