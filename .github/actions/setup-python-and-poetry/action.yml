@@ -99,22 +99,11 @@ runs:
       with:
         path: |
           ${{ steps.pipx-dirs.outputs.venv }}
-          ${{ steps.pipx-dirs.outputs.bin }}.7z
+          ${{ steps.pipx-dirs.outputs.bin }}
         key: "\
           setup_poetry_env-${{ runner.os }}-\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
           pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
-
-    - name: Extract Poetry bin
-      if: >-
-        runner.os == 'Windows' &&
-        steps.poetry-cache.outputs.cache-hit == 'true'
-      run: |
-        7z x -o"${{ steps.pipx-dirs.outputs.bin }}" \
-          "${{ steps.pipx-dirs.outputs.bin }}.7z"
-        rm -f "${{ steps.pipx-dirs.outputs.bin }}.7z"
-        ls "$(pipx environment --value PIPX_BIN_DIR)"
-      shell: bash
 
     - name: Install Poetry with pipx
       if: steps.poetry-cache.outputs.cache-hit != 'true'
@@ -127,6 +116,7 @@ runs:
       shell: bash
 
     - run: |
+        ls "$(pipx environment --value PIPX_HOME)/venvs"
         poetry -V
         poetry config cache-dir
       shell: bash
@@ -204,11 +194,4 @@ runs:
         # Poetry log will be corrupted on Windows.
         # Changing the encoding to utf-8 fixes this problem.
         PYTHONIOENCODING: 'utf-8'
-      shell: bash
-
-    - name: Compress poetry bin
-      if: ${{ runner.os }} == 'Windows'
-      run: |
-        7z a "${{ steps.pipx-dirs.outputs.bin }}.7z" \
-          "${{ steps.pipx-dirs.outputs.bin }}"
       shell: bash
