@@ -113,7 +113,7 @@ runs:
         7z x -o"${{ steps.pipx-dirs.outputs.venv }}" \
           "${{ steps.pipx-dirs.outputs.venv }}.7z"
         rm -f "${{ steps.pipx-dirs.outputs.venv }}.7z"
-        ls "$(pipx environment --value PIPX_HOME)"
+        ls "$(pipx environment --value PIPX_HOME)/venvs/poetry"
       shell: bash
 
     - name: Install Poetry with pipx
