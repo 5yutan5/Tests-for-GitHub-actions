@@ -116,7 +116,7 @@ runs:
       shell: bash
 
     - run: |
-        run "${{ steps.pipx-dirs.outputs.poetry_venv }}/Scripts/poetry"
+        run "${{ steps.pipx-dirs.outputs.poetry_venv }}/Scripts/poetry.exe"
         poetry -V
         poetry config cache-dir
       shell: bash
