@@ -89,7 +89,7 @@ runs:
           BIN_PATH="$(pipx environment --value PIPX_BIN_DIR)/poetry"
         fi
         echo bin=$BIN_PATH >> $GITHUB_OUTPUT
-        echo venv=$(pipx environment --value PIPX_HOME) \
+        echo venv=$(pipx environment --value PIPX_HOME)/venvs/poetry \
           >> $GITHUB_OUTPUT
       shell: bash
 
@@ -116,7 +116,7 @@ runs:
       shell: bash
 
     - run: |
-        poetry -h
+        poetry -h"
         poetry -V
         poetry config cache-dir
       shell: bash
