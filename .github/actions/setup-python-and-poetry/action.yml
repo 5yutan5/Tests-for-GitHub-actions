@@ -111,7 +111,7 @@ runs:
         steps.poetry-cache.outputs.cache-hit == 'true'
       run: |
         7z x "${{ steps.pipx-dirs.outputs.bin }}.7z" \
-          "${{ steps.pipx-dirs.outputs.bin }}"
+          -o "${{ steps.pipx-dirs.outputs.bin }}"
         ls "$(pipx environment --value PIPX_BIN_DIR)"
       shell: bash
 
