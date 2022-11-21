@@ -116,7 +116,7 @@ runs:
       shell: bash
 
     - run: |
-        pipx run poetry
+        poetry -h
         poetry -V
         poetry config cache-dir
       shell: bash
