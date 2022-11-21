@@ -110,8 +110,8 @@ runs:
         runner.os == 'Windows' &&
         steps.poetry-cache.outputs.cache-hit == 'true'
       run: |
-        7z x "${{ steps.pipx-dirs.outputs.bin }}.7z" \
-          -o "${{ steps.pipx-dirs.outputs.bin }}"
+        7z x -o"${{ steps.pipx-dirs.outputs.bin }}" \
+          "${{ steps.pipx-dirs.outputs.bin }}.7z"
         ls "$(pipx environment --value PIPX_BIN_DIR)"
       shell: bash
 
