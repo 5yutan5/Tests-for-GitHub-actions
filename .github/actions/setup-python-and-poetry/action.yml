@@ -110,8 +110,8 @@ runs:
         ${{ steps.poetry-cache.outputs.cache-hit }} == 'true' &&
         ${{ runner.os }} == 'Windows'
       run: |
-        7z x ${{ steps.pipx-dirs.outputs.bin }}.7z
-        pipx environment --value PIPX_BIN_DIR
+        7z x "${{ steps.pipx-dirs.outputs.bin }}.7z"
+        ls "$(pipx environment --value PIPX_BIN_DIR)"
       shell: bash
 
     - name: Install Poetry with pipx
@@ -207,6 +207,6 @@ runs:
     - name: Compress poetry bin
       if: ${{ runner.os }} == 'Windows'
       run: |
-        7z a ${{ steps.pipx-dirs.outputs.bin }}.7z \
-          ${{ steps.pipx-dirs.outputs.bin }}
+        7z a "${{ steps.pipx-dirs.outputs.bin }}.7z" \
+          "${{ steps.pipx-dirs.outputs.bin }}"
       shell: bash
