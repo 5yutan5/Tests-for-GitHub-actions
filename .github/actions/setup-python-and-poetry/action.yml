@@ -126,7 +126,7 @@ runs:
       run: |
         echo "C:\msys64\usr\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
         rm C:\msys64\usr\bin\bash.exe
-      shell: bash
+      shell: pwsh
 
     - run: |
         poetry -V
