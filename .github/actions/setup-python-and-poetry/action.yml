@@ -33,6 +33,7 @@ inputs:
 
   poetry-version:
     description: 'The Poetry version to install.'
+    default: '1.2.2'
   poetry-installer-max-workers:
     description: 'Wrapper around Poetry setting `installer.max-workers`.'
   poetry-installer-parallel:
@@ -95,30 +96,20 @@ runs:
 
     - name: Restore and cache Poetry installation
       uses: actions/cache@v3
+      if: runner.os != 'Windows'
       id: poetry-cache
       with:
         path: |
           ${{ steps.pipx-dirs.outputs.poetry_venv }}
           ${{ steps.pipx-dirs.outputs.poetry_bin }}
         key: "\
-          setup_poetry_env-${{ runner.os }}-\
+          setup-poetry-env-${{ runner.os }}-poetry-${{ inputs.poetry-version }}\
           ${{ steps.poetry-tool-versions.outputs.python }}-\
-          pipx_${{ steps.poetry-tool-versions.outputs.pipx }}"
+          pipx-${{ steps.poetry-tool-versions.outputs.pipx }}"
 
     - name: Install Poetry with pipx
       if: steps.poetry-cache.outputs.cache-hit != 'true'
-      run: |
-        if [ -z "${{ inputs.poetry-version }}" ]; then
-          pipx install poetry
-        else
-          pipx install poetry==${{ inputs.poetry-version }}
-        fi
-      shell: bash
-
-    - run: |
-        run "${{ steps.pipx-dirs.outputs.poetry_venv }}/Scripts/poetry.exe"
-        poetry -V
-        poetry config cache-dir
+      run: pipx install poetry==${{ inputs.poetry-version }}
       shell: bash
 
     - name: Configure Poetry
