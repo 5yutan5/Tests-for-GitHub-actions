@@ -116,7 +116,7 @@ runs:
       shell: bash
 
     - run: |
-        ls "$(pipx environment --value PIPX_HOME)/venvs"
+        pipx run poetry
         poetry -V
         poetry config cache-dir
       shell: bash
