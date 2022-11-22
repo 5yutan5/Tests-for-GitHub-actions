@@ -12,6 +12,7 @@ jobs:
         os: [ubuntu-latest, macOS-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
+      - uses: actions/checkout@v3
       - uses: 5yutan5/test-typescript-action@main
         with:
           python-version: 3.x
