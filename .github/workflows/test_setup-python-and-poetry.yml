@@ -33,3 +33,18 @@ jobs:
           poetry-virtualenvs-in-project: 'true'
 
       - run: poetry run python demo_python/test.py
+
+  setup-poetry-env--only-root:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: 5yutan5/test-typescript-action@main
+        with:
+          python-version: 3.x
+          poetry-install--only-root: 'true'
+
+      - run: poetry run python demo_python/test.py
