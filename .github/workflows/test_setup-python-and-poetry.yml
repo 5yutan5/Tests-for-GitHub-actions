@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: 5yutan5/test-typescript-action@main
+      - uses: 5yutan5/setup-poetry-env@main
         with:
           python-version: 3.x
 
@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: 5yutan5/test-typescript-action@main
+      - uses: 5yutan5/setup-poetry-env@main
         with:
           python-version: 3.x
           poetry-virtualenvs-in-project: 'true'
@@ -42,7 +42,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
-      - uses: 5yutan5/test-typescript-action@main
+      - uses: 5yutan5/setup-poetry-env@main
         with:
           python-version: 3.x
           poetry-install--only-root: 'true'
